@@ -8,18 +8,20 @@ Vagrant.configure(2) do |config|
     oracle.vm.provider :virtualbox do |vb|
        vb.customize ["modifyvm", :id, "--memory", "4096"]
        vb.customize ["modifyvm", :id, "--name", "oraclebox"]
-       vb.customize [
-            'createhd', 
-            '--filename', 'disk/oracle', 
-            '--format', 'VDI', 
-            '--size', 60200
-            ] 
-       vb.customize [
-            'storageattach', :id, 
-            '--storagectl', "SATA", 
-            '--port', 1, '--device', 0, 
-            '--type', 'hdd', '--medium', 'disk/oracle.vdi'
-            ]
+       if !File.exist?("disk/oracle.vdi")
+         vb.customize [
+              'createhd', 
+              '--filename', 'disk/oracle', 
+              '--format', 'VDI', 
+              '--size', 60200
+              ] 
+         vb.customize [
+              'storageattach', :id, 
+              '--storagectl', "SATA", 
+              '--port', 1, '--device', 0, 
+              '--type', 'hdd', '--medium', 'disk/oracle.vdi'
+              ]
+       end     
     end
     oracle.vm.provision "shell", path: "shell/add-oracle-disk.sh"
     oracle.vm.provision "shell", path: "shell/provision.sh"
